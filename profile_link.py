@@ -126,9 +126,9 @@ all_post_data = scrape_posts_on_page()
 post_df = pd.DataFrame(all_post_data)
 
 # Save the data to an Excel file
-post_df.to_excel("profile_link.py.xlsx", index=False)
+post_df.to_excel("profile_link.xlsx", index=False)
 
 # Close the browser
 driver.quit()
 
-print("Scraping complete. Data saved to 'profile_link.xlsx'.")
+print("Scraping complete.")

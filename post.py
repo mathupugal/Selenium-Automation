@@ -152,4 +152,4 @@ post_df.to_excel("post.xlsx", index=False)
 # Close the browser
 driver.quit()
  
-print("Scraping complete. Data saved to 'post.xlsx'.")
+print("Scraping complete.")

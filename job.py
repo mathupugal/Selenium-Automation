@@ -100,4 +100,4 @@ job_df.to_excel("job.xlsx", index=False)
 # Close the browser
 
 driver.quit()
-print("Scraping complete. Data saved to 'job.xlsx'.")
+print("Scraping complete.")

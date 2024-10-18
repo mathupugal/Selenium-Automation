@@ -3,33 +3,38 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from dotenv import load_dotenv
 import time
 import pandas as pd
- 
+import os
+import re
+
 # Path to your ChromeDriver
 CHROMEDRIVER_PATH = "chromedriver.exe"
- 
+
+# Load environment variables
+load_dotenv()
+
 # LinkedIn credentials
-USERNAME = "mathupugal21@gmail.com"
-PASSWORD = "happyhome21"
- 
- 
+USERNAME = os.getenv('USER_NAME')
+PASSWORD = os.getenv('LINKEDIN_PASSWORD')
+
 # Configure Chrome options
 chrome_options = Options()
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--window-size=1920,1200")
 chrome_options.add_argument("--ignore-certificate-errors")
 chrome_options.add_argument("--disable-extensions")
- 
+
 # Initialize Chrome WebDriver
 driver = webdriver.Chrome(service=Service(CHROMEDRIVER_PATH), options=chrome_options)
-wait = WebDriverWait(driver, 30)  # Set an explicit wait time of 15 seconds
- 
+wait = WebDriverWait(driver, 30)
+
 # Navigate to LinkedIn login page
 driver.get("https://www.linkedin.com/login")
- 
+
 # Log in to LinkedIn
 email_input = wait.until(EC.presence_of_element_located((By.ID, "username")))
 email_input.send_keys(USERNAME)
@@ -37,67 +42,58 @@ password_input = driver.find_element(By.ID, "password")
 password_input.send_keys(PASSWORD)
 login_button = driver.find_element(By.XPATH, "//button[@type='submit']")
 login_button.click()
- 
+
 # Wait for the page to load
-time.sleep(5)
- 
+time.sleep(2)
+
 # Search for "ServiceNow" on the home page
 search_bar = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input.search-global-typeahead__input")))
 search_bar.send_keys("hiring for #servicenow")
 search_bar.send_keys(Keys.RETURN)
- 
+
 # Wait for the search results page to load
-time.sleep(5)
- 
+time.sleep(2)
+
 # Click on the "Posts" tab to filter only posts
 posts_tab = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Posts']")))
 posts_tab.click()
- 
+
 # Wait for the posts to load
-time.sleep(5)
- 
+time.sleep(2)
+
 # Open the "Date Posted" filter dropdown
 date_filter = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Date posted']")))
 date_filter.click()
- 
+
 # Wait for the dropdown to open
-time.sleep(5)
- 
+time.sleep(2)
+
 # Select the "Past 24 hours" option
 past_24_hours = wait.until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Past 24 hours']")))
 past_24_hours.click()
- 
-# Wait for the posts to load
-time.sleep(5)
- 
+
+# Wait for the filtered results to load
+time.sleep(2)
+
 # Click the "Show Results" button to apply the filter
-# Update the XPATH to target the button more precisely
 show_results_button = wait.until(EC.element_to_be_clickable((By.XPATH, "(//span[text()='Show results'])[2]")))
-#driver.execute_script("arguments[0].scrollIntoView(true);", show_results_button)
-#driver.execute_script("arguments[0].click();", show_results_button)
- 
- 
-# Wait for the filtered results to load
-time.sleep(5)
 show_results_button.click()
- 
+
 # Wait for the filtered results to load
-time.sleep(5)
-# Function to scrape posts on the current page and fetch the post link and other details
-def scrape_posts(max_posts=60):
+time.sleep(3)
+
+# Function to scrape all posts until the last post is reached
+def scrape_all_posts():
     post_data = []  # List to store post details
     posts_scraped = 0  # Counter for scraped posts
-    scroll_attempts = 0  # Count of scroll attempts in case we need more posts
+    last_height = driver.execute_script("return document.body.scrollHeight")  # Track the last scroll height
 
-    while posts_scraped < max_posts and scroll_attempts < 70:
+    while True:
         # Wait for post containers to be present on the page
         post_containers = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "fie-impression-container")))
-        
-        # Loop through each post container in order
+
+        # Loop through each post container on the page
         for post in post_containers[posts_scraped:]:
-            if posts_scraped >= max_posts:
-                break  # Stop when we have collected the required number of posts
-            
             try:
                 # Scroll to the post to ensure it's in view
                 driver.execute_script("arguments[0].scrollIntoView(true);", post)
@@ -119,15 +115,15 @@ def scrape_posts(max_posts=60):
                 copy_link_option.click()
                 time.sleep(2)  # Allow time for the link to be copied
 
-                # Retrieve the copied link from the clipboard (You may need to adapt this part based on clipboard access)
+                # Retrieve the copied link from the clipboard (adapt as needed for clipboard access)
                 post_link = driver.execute_script("return navigator.clipboard.readText()")
 
-                # Append the post details to the list in the desired order
+                # Append the post details to the list
                 post_data.append({
                     "Author": author,
                     "Description": description,
                     "Time Posted": time_posted,
-                    "Post Link": post_link
+                    "Post Link": post_link,
                 })
                 posts_scraped += 1  # Increment the counter
 
@@ -139,23 +135,57 @@ def scrape_posts(max_posts=60):
             except Exception as e:
                 print(f"Error scraping post: {e}")
                 continue
+
+        # Scroll down to load more posts
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(2)  # Wait for new content to load
         
-        # Scroll down if fewer than 10 posts have been scraped
-        if posts_scraped < max_posts:
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(5)  # Wait for new content to load
-            scroll_attempts += 1
+        # Check if more posts have been loaded
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            # If the scroll height hasn't changed, we've reached the bottom of the page
+            print("Reached the last post.")
+            break
+        last_height = new_height  # Update the last scroll height
 
     return post_data
 
-# Scrape the first 10 posts in order
-all_post_data = scrape_posts(max_posts=60)
+# Scrape all available posts
+all_post_data = scrape_all_posts()
 
-# Convert the data to a pandas DataFrame and save it to an Excel file
+# Convert the data to a pandas DataFrame
 post_df = pd.DataFrame(all_post_data, columns=["Author", "Description", "Time Posted", "Post Link"])
-post_df.to_excel("post_60.xlsx", index=False)
+
+# Function to convert time posted (like '5m', '3h') into minutes
+def convert_to_minutes(time_posted):
+    # Remove unnecessary parts like '• Edited •'
+    time_posted = re.sub(r'•.*$', '', time_posted).strip()
+
+    # Extract the number and unit (m for minutes, h for hours)
+    match = re.match(r"(\d+)([mh])", time_posted)
+    if match:
+        value, unit = match.groups()
+        value = int(value)
+       
+        if unit == 'm':  # If the time is in minutes, return as is
+            return value
+        elif unit == 'h':  # If the time is in hours, convert to minutes
+            return value * 60
+    return float('inf')  # If no match, return infinity to push it to the end of the sort
+
+# Apply the function to the 'Time Posted' column
+post_df['Time Posted (Minutes)'] = post_df['Time Posted'].apply(convert_to_minutes)
+
+# Sort the DataFrame by 'Time Posted (Minutes)' column in ascending order
+sorted_post_df = post_df.sort_values(by='Time Posted (Minutes)', ascending=True)
+
+# Drop the helper column if you don't need it anymore
+sorted_post_df = sorted_post_df.drop(columns=['Time Posted (Minutes)'])
+
+# Save the sorted DataFrame to an Excel file
+sorted_post_df.to_excel("infinite_sort.xlsx", index=False)
 
 # Close the browser
 driver.quit()
 
-print("Scraping complete.")
+print("Scraping and sorting complete.")
