@@ -39,7 +39,7 @@ login_button = driver.find_element(By.XPATH, "//button[@type='submit']")
 login_button.click()
  
 # Wait for the page to load
-time.sleep(5)
+time.sleep(2)
  
 # Search for "ServiceNow" on the home page
 search_bar = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input.search-global-typeahead__input")))
@@ -47,28 +47,28 @@ search_bar.send_keys("hiring for #servicenow")
 search_bar.send_keys(Keys.RETURN)
  
 # Wait for the search results page to load
-time.sleep(5)
+time.sleep(2)
  
 # Click on the "Posts" tab to filter only posts
 posts_tab = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Posts']")))
 posts_tab.click()
  
 # Wait for the posts to load
-time.sleep(5)
+time.sleep(2)
  
 # Open the "Date Posted" filter dropdown
 date_filter = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Date posted']")))
 date_filter.click()
  
 # Wait for the dropdown to open
-time.sleep(5)
+time.sleep(2)
  
 # Select the "Past 24 hours" option
 past_24_hours = wait.until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Past 24 hours']")))
 past_24_hours.click()
  
 # Wait for the posts to load
-time.sleep(5)
+time.sleep(2)
  
 # Click the "Show Results" button to apply the filter
 # Update the XPATH to target the button more precisely
@@ -78,11 +78,11 @@ show_results_button = wait.until(EC.element_to_be_clickable((By.XPATH, "(//span[
  
  
 # Wait for the filtered results to load
-time.sleep(5)
+time.sleep(2)
 show_results_button.click()
  
 # Wait for the filtered results to load
-time.sleep(5)
+time.sleep(2)
 # Function to scrape posts on the current page and fetch the post link
 def scrape_posts_on_page():
     post_data = []
@@ -110,12 +110,12 @@ def scrape_posts_on_page():
             #more_options_button =wait.until(EC.element_to_be_clickable((By.XPATH, "(//button[contains(@aria-label,'Open control menu for post by')])[{post}]")))
             more_options_button =wait.until(EC.element_to_be_clickable((By.XPATH, "(//button[contains(@aria-label,'Open control menu for post by')])")))
             more_options_button.click()
-            time.sleep(5)  # Wait for the menu to appear
+            time.sleep(2)  # Wait for the menu to appear
  
             # Click on the "Copy link to post" option
             copy_link_option = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[text()='Copy link to post']")))
             copy_link_option.click()
-            time.sleep(5)  # Wait for the link to be copied
+            time.sleep(2)  # Wait for the link to be copied
  
             # Get the copied link from the clipboard (this may require an alternative method as clipboard access is restricted in some environments)
             post_link = driver.execute_script("return navigator.clipboard.readText()")
@@ -132,7 +132,7 @@ def scrape_posts_on_page():
             # Close the options menu (if necessary)
             close_modal_button = driver.find_element(By.XPATH, "//button[@aria-label='Dismiss']")
             close_modal_button.click()
-            time.sleep(5)
+            time.sleep(2)
        
         except Exception as e:
             print(f"Error scraping post: {e}")

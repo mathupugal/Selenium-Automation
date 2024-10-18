@@ -39,7 +39,7 @@ login_button = driver.find_element(By.XPATH, "//button[@type='submit']")
 login_button.click()
  
 # Wait for the page to load
-time.sleep(5)
+time.sleep(2)
  
 # Search for "ServiceNow" on the home page
 search_bar = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input.search-global-typeahead__input")))
@@ -47,28 +47,28 @@ search_bar.send_keys("hiring for #servicenow")
 search_bar.send_keys(Keys.RETURN)
  
 # Wait for the search results page to load
-time.sleep(5)
+time.sleep(2)
  
 # Click on the "Posts" tab to filter only posts
 posts_tab = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Posts']")))
 posts_tab.click()
  
 # Wait for the posts to load
-time.sleep(5)
+time.sleep(2)
  
 # Open the "Date Posted" filter dropdown
 date_filter = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Date posted']")))
 date_filter.click()
  
 # Wait for the dropdown to open
-time.sleep(5)
+time.sleep(2)
  
 # Select the "Past 24 hours" option
 past_24_hours = wait.until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Past 24 hours']")))
 past_24_hours.click()
  
 # Wait for the posts to load
-time.sleep(5)
+time.sleep(2)
  
 # Click the "Show Results" button to apply the filter
 # Update the XPATH to target the button more precisely
@@ -78,11 +78,11 @@ show_results_button = wait.until(EC.element_to_be_clickable((By.XPATH, "(//span[
  
  
 # Wait for the filtered results to load
-time.sleep(5)
+time.sleep(2)
 show_results_button.click()
  
 # Wait for the filtered results to load
-time.sleep(5)
+time.sleep(2)
 # Function to scrape posts on the current page and fetch the post link and other details
 def scrape_posts(max_posts=60):
     post_data = []  # List to store post details

@@ -41,17 +41,16 @@ login_button = driver.find_element(By.XPATH, "//button[@type='submit']")
 login_button.click()
 
 # Wait for the page to load
-time.sleep(5)
- 
+time.sleep(2)
  
 driver.get("https://www.linkedin.com/jobs/")
-time.sleep(5)
+time.sleep(2)
 
 # Find the job search bar and enter your keywords (e.g., "Software Engineer")
 search_bar = driver.find_element(By.CSS_SELECTOR, "input.jobs-search-box__text-input")
 search_bar.send_keys("Software Engineer")
 search_bar.send_keys(Keys.RETURN)
-time.sleep(5)
+time.sleep(2)
 
 # Function to scrape job listings
 def scrape_jobs_on_page():
@@ -87,7 +86,7 @@ for page in range(1, 2):  # 10 pages
     try:
         next_button = driver.find_element(By.CSS_SELECTOR, "button[aria-label='Next']")
         next_button.click()
-        time.sleep(5)  # Wait for the next page to load
+        time.sleep(2)  # Wait for the next page to load
     except:
         print("No more pages or next button not found")
         break

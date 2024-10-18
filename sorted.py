@@ -83,11 +83,11 @@ show_results_button = wait.until(EC.element_to_be_clickable((By.XPATH, "(//span[
  
  
 # Wait for the filtered results to load
-time.sleep(5)
+time.sleep(2)
 show_results_button.click()
  
 # Wait for the filtered results to load
-time.sleep(5)
+time.sleep(2)
  
 # Function to scrape posts on the current page and fetch the post link
 def scrape_posts(max_posts=100):

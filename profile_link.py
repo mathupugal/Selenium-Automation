@@ -68,11 +68,11 @@ past_24_hours = wait.until(EC.element_to_be_clickable((By.XPATH, "//span[text()=
 past_24_hours.click()
 
 # Wait for the posts to load
-time.sleep(5)
+time.sleep(2)
 show_results_button = wait.until(EC.element_to_be_clickable((By.XPATH, "(//span[text()='Show results'])[2]")))
 show_results_button.click()
 
-time.sleep(5)
+time.sleep(2)
 
 # Function to scrape posts
 def scrape_posts_on_page():
@@ -115,7 +115,7 @@ def scrape_posts_on_page():
 
         # Scroll down to load more posts if necessary
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(5)  # Adjust the sleep time based on network speed
+        time.sleep(2)  # Adjust the sleep time based on network speed
 
     return post_data
 

@@ -80,7 +80,7 @@ show_results_button = wait.until(EC.element_to_be_clickable((By.XPATH, "(//span[
 show_results_button.click()
 
 # Wait for the filtered results to load
-time.sleep(3)
+time.sleep(2)
 
 # Function to scrape all posts until the last post is reached
 def scrape_all_posts():
